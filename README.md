@@ -13,6 +13,7 @@ https://youtu.be/xdd5pn1xs7M?t=315
 
 # next steps
 
+- better filter against noise, improves detecting melodies
 - set up chrome extension
 - on/off button when you click the extension (default: on)
 - add threshold input to adjust threshold for detecting notes  
