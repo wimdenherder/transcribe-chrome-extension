@@ -26,4 +26,5 @@ faster (+)
 mousedown: starttime  
 mouseup: endtime  
 - visualise the loop in the play timeline under the video  
+- next challenge: Guitartab with red dots!
 - more testing  
