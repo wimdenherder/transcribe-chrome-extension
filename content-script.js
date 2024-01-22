@@ -26,7 +26,10 @@ const startLoop = () => { startTime = video.currentTime; console.log(document.qu
 const endLoop = () => { endTime = video.currentTime;video.currentTime = startTime; addBorderToButton("#endButton")  }
 const deleteLoop = () => { startTime = null; endTime = null; normalBorderButton("#startButton"); normalBorderButton("#endButton");}
 const videoSlower = () => video.playbackRate *= 1/1.15;
-const videoFaster = () => video.playbackRate *= 1.15;
+const videoFaster = () => {
+  video.playbackRate *= 1.15;
+  updateSliderSpeed();
+}
 const moveBack = () => video.currentTime -= 0.5;
 const moveForward = () => video.currentTime += 0.5;
 
@@ -332,6 +335,49 @@ function createMenu() {
     button.onmouseleave = () => button.style.backgroundColor = '#f0f0f0';
     menuContainer.appendChild(button);
   });
+
+  // Maak de snelheidstekst
+  const speedDisplay = document.createElement('div');
+  speedDisplay.id = 'speedDisplay';
+  speedDisplay.innerText = (video.playbackRate * 100).toFixed(0) + '%'; // Standaardtekst gelijk aan huidige video snelheid
+  menuContainer.appendChild(speedDisplay);
+
+  // Stijl de snelheidstekst
+  speedDisplay.style.textAlign = 'center';
+  speedDisplay.style.marginBottom = '10px';
+
+  // Maak de slider
+  const slider = document.createElement('input');
+  slider.id = "speedSlider"
+  slider.type = 'range';
+  slider.min = '0.1';
+  slider.max = '2';
+  slider.step = '0.1';
+  slider.value = video.playbackRate; // Standaardwaarde gelijk aan huidige video snelheid
+  slider.id = 'speedSlider';
+  
+  // Stijl de slider
+  slider.style.width = '100%';
+  slider.style.marginTop = '10px';
+
+  // Voeg de slider toe aan de container
+  menuContainer.appendChild(slider);
+
+  // Functie om video snelheid aan te passen wanneer de slider beweegt
+  slider.oninput = function() {
+    video.playbackRate = this.value;
+    speedDisplay.innerText = (this.value * 100).toFixed(0) + '%'; // Update de snelheidstekst
+  };
+
+  // Synchroniseer de slider met de video snelheid als deze elders wordt gewijzigd
+  video.onratechange = updateSliderSpeed;
+}
+
+function updateSliderSpeed() {
+  const slider = document.getElementById('speedSlider');
+  slider.value = this.playbackRate;
+  const speedDisplay = document.getElementById('speedDisplay');
+  speedDisplay.innerText = (this.playbackRate * 100).toFixed(0) + '%'; // Update de snelheidstekst
 }
 
 // Roep de functie aan om het menu te creëren
