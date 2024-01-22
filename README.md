@@ -1,6 +1,6 @@
 # Chrome extension: transcribe music
 
-![Screenshot](assets/screenshot.png)
+![Screenshot](assets/screenshot2.png)
 
 - Transcribe notes on a keyboard under the video 
 - Make a-b loops
