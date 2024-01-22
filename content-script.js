@@ -1,6 +1,7 @@
 let activeNotes = [];
 let durationShowNote = 0.1; // na zoveel seconden verdwijnt de noot uit beeld
-let thresholdNote = 190; // drempelwaarde voor het detecteren van een noot
+let defaultThresholdNote = 180; // drempelwaarde voor het detecteren van een noot
+let thresholdNote = defaultThresholdNote; // drempelwaarde voor het detecteren van een noot
 let maxFrequency = 2000;
 
 // Globale variabelen voor start- en eindtijd
@@ -124,32 +125,37 @@ function addSlider() {
     // Maak de container voor de controls
     var controlsContainer = document.createElement('div');
     controlsContainer.id = 'controls';
+    controlsContainer.style.display = 'flex';
+    controlsContainer.style.borderRadius = '10px';
+    controlsContainer.style.gap = '10px';
+    controlsContainer.style.padding = '7px';
+    controlsContainer.style.border = '2px black solid';
+    controlsContainer.style.background = 'white';
     controlsContainer.style.marginTop = '20px';
-    controlsContainer.style.position = "absolute";
-    controlsContainer.style.top = "150px";
-    controlsContainer.style.zIndex = 1000000000;
-
-
+    controlsContainer.style.position = 'absolute';
+    controlsContainer.style.top = '140px';
+    controlsContainer.style.left = '10px';
+    controlsContainer.style.zIndex = '1000000000';
   
     // Maak het label voor de slider
     var label = document.createElement('label');
     label.htmlFor = 'thresholdSlider';
-    label.textContent = 'Threshold Note: ';
+    label.textContent = 'Sensitivity: ';
   
     // Maak de slider
     var thresholdSlider = document.createElement('input');
     thresholdSlider.type = 'range';
     thresholdSlider.id = 'thresholdSlider';
     thresholdSlider.min = '80';
-    thresholdSlider.max = '250';
-    thresholdSlider.value = '190';
+    thresholdSlider.max = '150';
+    thresholdSlider.value = '100';
     thresholdSlider.step = '1';
     thresholdSlider.style.width = '300px';
   
     // Maak de span voor de waarde
     var thresholdValueDisplay = document.createElement('span');
     thresholdValueDisplay.id = 'thresholdValue';
-    thresholdValueDisplay.textContent = '190';
+    thresholdValueDisplay.textContent = '100';
   
     // Voeg de elementen toe aan de controls container
     controlsContainer.appendChild(label);
@@ -162,7 +168,8 @@ function addSlider() {
   
     // Voeg event listener toe aan de slider
     thresholdSlider.addEventListener('input', function() {
-      thresholdNote = this.value;
+      sensitivity = this.value; // % notation
+      thresholdNote = defaultThresholdNote / (parseInt(sensitivity) / 100);
       thresholdValueDisplay.textContent = this.value;
     });
   }
@@ -172,11 +179,6 @@ addSlider(); // run addSlider after addKeyboardAndCanvasToBody
 
 const thresholdSlider = document.getElementById('thresholdSlider');
 const thresholdValueDisplay = document.getElementById('thresholdValue');
-
-thresholdSlider.addEventListener('input', function() {
-  thresholdNote = this.value;
-  thresholdValueDisplay.textContent = this.value;
-});
 
 var canvas = document.getElementById("noteVisualizer");
 var canvasCtx = canvas.getContext("2d");
