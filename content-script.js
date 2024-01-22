@@ -22,47 +22,54 @@ function checkVideoTime() {
 // Start het controleren van de tijd
 checkVideoTime();
 
+const startLoop = () => { startTime = video.currentTime; console.log(document.querySelector("#startButton")); addBorderToButton("#startButton") }
+const endLoop = () => { endTime = video.currentTime;video.currentTime = startTime; addBorderToButton("#endButton")  }
+const deleteLoop = () => { startTime = null; endTime = null; normalBorderButton("#startButton"); normalBorderButton("#endButton");}
+const videoSlower = () => video.playbackRate *= 1/1.15;
+const videoFaster = () => video.playbackRate *= 1.15;
+const moveBack = () => video.currentTime -= 0.5;
+const moveForward = () => video.currentTime += 0.5;
+
+function addBorderToButton(buttonId) {
+  const button = document.querySelector(buttonId);
+  if(!button) return;
+  button.style.border = '3px solid blue';
+}
+
+function normalBorderButton(buttonId) {
+  const button = document.querySelector(buttonId);
+  if(!button) return;
+  button.style.border = '1px solid #ccc';
+}
+
+
 // Event listener voor toetsaanslagen
 document.addEventListener("keydown", function (event) {
   switch (event.key) {
     case "a":
-      // Zet startTime op de huidige tijd van de video
-      startTime = video.currentTime;
-      // console.log(`Start time set to: ${startTime}`);
+      startLoop();
       break;
     case "b":
-      // Zet endTime op de huidige tijd van de video en spring naar startTime
-      endTime = video.currentTime;
-      video.currentTime = startTime;
-      // console.log(`End time set to: ${endTime}`);
+      endLoop();
       break;
     case "s":
-      // Reset startTime en endTime
-      startTime = null;
-      endTime = null;
-      // console.log('Start and end times reset');
+      deleteLoop();
       break;
     case "-":
-      // Verlaag de afspeelsnelheid van de video
-      video.playbackRate *= 1 / 1.15;
-      // console.log(`Playback rate set to: ${video.playbackRate}`);
+      videoSlower()
       break;
     case "=":
     case "+":
-      // Verhoog de afspeelsnelheid van de video
-      video.playbackRate *= 1.15;
-      // console.log(`Playback rate set to: ${video.playbackRate}`);
+      videoFaster()
       break;
     case "[":
-      // ga klein stukje terug in video
-      video.currentTime -= 0.5;
+      moveBack();
       break;
     case "]":
-      // ga klein stukje vooruit in video
-      video.currentTime += 0.5;
+      moveForward();
       break;
     default:
-      // Doe niets voor andere toetsen
+      // doe niets voor andere toetsen
       break;
   }
 });
@@ -277,4 +284,56 @@ function drawNoteOnKeyboard(note, canvasCtx) {
   canvasCtx.fillText(noteNames[note % 12], xPosition, yPosition);
 }
 
+// Functie om de menu container en knoppen te creëren
+function createMenu() {
+  // Maak de container div
+  const menuContainer = document.createElement('div');
+  menuContainer.id = 'menuContainer';
+  document.body.appendChild(menuContainer);
+
+  // Stijl de container
+  menuContainer.style.position = 'fixed';
+  menuContainer.style.top = '100px';
+  menuContainer.style.right = '10px';
+  menuContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+  menuContainer.style.border = '4px solid darkblue';
+  menuContainer.style.borderRadius = '10px';
+  menuContainer.style.padding = '10px';
+  menuContainer.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+  menuContainer.style.display = 'flex';
+  menuContainer.style.flexDirection = 'column'; // Maakt de knoppen onder elkaar
+  menuContainer.style.gap = '10px';
+
+  // Maak de knoppen en voeg ze toe aan de container
+  const buttons = [
+    { id: 'startButton', text: 'Start (a)', onClick: startLoop },
+    { id: 'endButton', text: 'End (b)', onClick: endLoop },
+    { id: 'stopButton', text: 'Stop Loop (s)', onClick: deleteLoop },
+    { id: 'slowerButton', text: 'Slower -', onClick: videoSlower },
+    { id: 'fasterButton', text: 'Faster +', onClick: videoFaster },
+    { id: 'backButton', text: 'Back [', onClick: moveBack },
+    { id: 'forwardButton', text: 'Forward ]', onClick: moveForward }
+  ];
+  
+
+  buttons.forEach(buttonInfo => {
+    const button = document.createElement('button');
+    button.innerText = buttonInfo.text;
+    button.onclick = buttonInfo.onClick;
+    button.id = buttonInfo.id;
+    button.style.cursor = 'pointer';
+    button.style.backgroundColor = '#f0f0f0';
+    button.style.border = '1px solid #ccc';
+    button.style.borderRadius = '5px';
+    button.style.padding = '5px 10px';
+    button.style.fontSize = '14px';
+    button.style.transition = 'background-color 0.3s';
+    button.onmouseover = () => button.style.backgroundColor = '#e0e0e0';
+    button.onmouseleave = () => button.style.backgroundColor = '#f0f0f0';
+    menuContainer.appendChild(button);
+  });
+}
+
+// Roep de functie aan om het menu te creëren
+createMenu();
 draw();
