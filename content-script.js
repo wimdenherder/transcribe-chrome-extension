@@ -3,6 +3,7 @@ let durationShowNote = 0.1; // na zoveel seconden verdwijnt de noot uit beeld
 let defaultThresholdNote = 180; // drempelwaarde voor het detecteren van een noot
 let thresholdNote = defaultThresholdNote; // drempelwaarde voor het detecteren van een noot
 let maxFrequency = 2000;
+let fromMicrophone = true;
 
 let correctionKeyboardImageStretch = -1;
 let correctionKeyboadBase = 15;
@@ -186,17 +187,43 @@ const thresholdValueDisplay = document.getElementById('thresholdValue');
 var canvas = document.getElementById("noteVisualizer");
 var canvasCtx = canvas.getContext("2d");
 
+let audioContext, source, analyser, bufferLength, dataArray;
 
-var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-var source = audioContext.createMediaElementSource(video);
-var analyser = audioContext.createAnalyser();
+// Capture audio from microphone, or from video
+if (fromMicrophone && navigator.mediaDevices.getUserMedia) {
+    // // Vraag om toegang tot de microfoon
+    // navigator.mediaDevices.getUserMedia({ audio: true })
+    // .then(function(stream) {
+    //     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    //     source = audioContext.createMediaStreamSource(stream);
+    //     console.log({audioContext});
+    //     vervolg();
+    // })
+    // .catch(function(err) {
+    //     console.log('Er is een fout opgetreden: ' + err);
+    // });
+} else {
+  console.log("from video");
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  source = audioContext.createMediaElementSource(video);
+  console.log({audioContext})
+  vervolg();
+}
 
-source.connect(analyser);
-analyser.connect(audioContext.destination);
+function vervolg() {
+  console.log("real",{audioContext})
+  analyser = audioContext.createAnalyser();
+  source.connect(analyser);
+  analyser.connect(audioContext.destination);
 
-analyser.fftSize = 2048 * 2 * 2;
-var bufferLength = analyser.frequencyBinCount;
-var dataArray = new Uint8Array(bufferLength);
+  analyser.fftSize = 2048 * 2 * 2;
+  bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+
+  // Roep de functie aan om het menu te creëren
+  createMenu();
+  draw();
+}
 
 function noteFromFrequency(frequency) {
   var noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
@@ -454,8 +481,3 @@ function playTone(frequency) {
   osc.start(); // Start de toon
   osc.stop(audioContext.currentTime + 0.5); // Stop de toon na 0.5 seconden
 }
-
-
-// Roep de functie aan om het menu te creëren
-createMenu();
-draw();
