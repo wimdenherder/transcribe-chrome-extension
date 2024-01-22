@@ -13,12 +13,7 @@ https://youtu.be/xdd5pn1xs7M?t=315
 
 # next steps
 
-- add menu with buttons and name of shortkey:  
-start (a)  
-end (b)  
-stop loop (s)  
-slower (-)  
-faster (+)  
+- black key note (right half of black key makes next white key sound!)
 - off when you click the extension again
 - select loop in the play timeline under the video  
 mousedown: starttime  
