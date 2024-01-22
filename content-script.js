@@ -4,6 +4,9 @@ let defaultThresholdNote = 180; // drempelwaarde voor het detecteren van een noo
 let thresholdNote = defaultThresholdNote; // drempelwaarde voor het detecteren van een noot
 let maxFrequency = 2000;
 
+let correctionKeyboardImageStretch = -1;
+let correctionKeyboadBase = 15;
+
 // Globale variabelen voor start- en eindtijd
 let startTime = null;
 let endTime = null;
@@ -197,7 +200,7 @@ var dataArray = new Uint8Array(bufferLength);
 
 function noteFromFrequency(frequency) {
   var noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
-  return Math.round(noteNum) + 49 - 1; // - 1, because strangely it was 4 notes off
+  return Math.round(noteNum) + 49 - 1; // - 1, because strangely it was a note off
 }
 
 function draw() {
@@ -256,8 +259,6 @@ function drawNoteOnKeyboard(noteInfo, canvasCtx) {
 
   if (note < 36 || note > 111) return; // buiten bereik van keyboard
 
-  let correctionKeyboardImageStretch = -1;
-  let correctionKeyboadBase = 15;
   let xPosition =
     correctionKeyboadBase +
     (note - 24) * (canvas.width / (88 - correctionKeyboardImageStretch)); // voorbeeld voor een 88 toetsen piano
@@ -405,6 +406,55 @@ function updateSliderSpeed() {
   const speedDisplay = document.getElementById('speedDisplay');
   speedDisplay.innerText = (video.playbackRate * 100).toFixed(0) + '%'; // Update de snelheidstekst
 }
+
+// Functie om de frequentie van een noot te krijgen
+function frequencyFromNoteNumber(note) {
+  return 440 * Math.pow(2, (note - (49 - 1)) / 12); // 49 - 1, compensate for 24 + 1 below
+}
+canvas.addEventListener('click', function(event) {
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left; // x positie binnen het canvas
+  const y = event.clientY - rect.top; // y positie binnen het canvas
+
+  // Bereken welke noot is geklikt
+  let noteClicked = Math.floor((x - correctionKeyboadBase) / (canvas.width / (88 - correctionKeyboardImageStretch))) + 24 + 1; // strangely, one note off while playing
+  if (y < canvas.height / 2.25) { // keyboard image has black keys at the top, ratio depends on image
+    const blackNotes = [1, 4, 6, 9, 11];
+    if(!blackNotes.includes(noteClicked % 12)) {
+      // do the same here, calculate the note that is played, the black key on the left or right
+      // black notes are 80% of the width of a white key
+    }
+  } else {
+    const blackNotes = [1, 4, 6, 9, 11];
+    if(blackNotes.includes(noteClicked % 12)) {
+      // Bepaal de breedte van een witte toets
+      const whiteKeyWidth = canvas.width / (88 - correctionKeyboardImageStretch);
+      // Bereken het startpunt van de huidige witte toets
+      const whiteKeyStart = correctionKeyboadBase + (noteClicked - 24) * whiteKeyWidth;
+      // Bepaal of de klik dichter bij het begin of het einde van de witte toets is
+      if (x - whiteKeyStart < whiteKeyWidth / 2) {
+        noteClicked -= 1; // Verlaag de noot als de klik dichter bij het begin is
+      } else {
+        noteClicked += 1; // Verhoog de noot als de klik dichter bij het einde is
+      }
+    }
+  }
+
+    const frequency = frequencyFromNoteNumber(noteClicked);
+    playTone(frequency);
+});
+
+
+// Functie om een toon te spelen met een bepaalde frequentie
+function playTone(frequency) {
+  const osc = audioContext.createOscillator(); // Maak een oscillator
+  osc.frequency.value = frequency; // Stel de frequentie in
+  osc.type = 'sine'; // Je kunt verschillende types proberen zoals 'sine', 'square', 'sawtooth', 'triangle'
+  osc.connect(audioContext.destination); // Verbind de oscillator met de output
+  osc.start(); // Start de toon
+  osc.stop(audioContext.currentTime + 0.5); // Stop de toon na 0.5 seconden
+}
+
 
 // Roep de functie aan om het menu te creëren
 createMenu();
