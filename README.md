@@ -13,7 +13,7 @@
 1. **Download the ZIP File:**
    - Download the ZIP file of the Chrome extension. Click Code at the top of this github page and then Download Zip.
 
-![Screenshot](assets/installation.png)
+![Screenshot](assets/installation.jpg)
 
 2. **Extract the ZIP File:**
    - Extract the contents of the ZIP file to a folder on your computer.
