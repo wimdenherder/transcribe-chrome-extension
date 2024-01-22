@@ -1,0 +1,21 @@
+{
+  "name": "Transcribe music from YouTube",
+  "description": "Adjust video speed. Make A-B loops. Transcribe music from YouTube with keyboad suggestions.",
+  "homepage_url": "https://github.com/wimdenherder/transcribe-chrome-extension",
+  "version": "2.0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "execute.js will run (watch the Chrome DevTools' console)"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "http://www.youtube.com/*"
+  ]
+}
