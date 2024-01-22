@@ -102,9 +102,69 @@ function addKeyboardAndCanvasToBody() {
   document.body.appendChild(container);
 }
 
+// run after addKeyboardAndCanvasToBody
+function addSlider() {
+
+    // Maak de container voor de controls
+    var controlsContainer = document.createElement('div');
+    controlsContainer.id = 'controls';
+    controlsContainer.style.marginTop = '20px';
+    controlsContainer.style.position = "absolute";
+    controlsContainer.style.top = "150px";
+    controlsContainer.style.zIndex = 1000000000;
+
+
+  
+    // Maak het label voor de slider
+    var label = document.createElement('label');
+    label.htmlFor = 'thresholdSlider';
+    label.textContent = 'Threshold Note: ';
+  
+    // Maak de slider
+    var thresholdSlider = document.createElement('input');
+    thresholdSlider.type = 'range';
+    thresholdSlider.id = 'thresholdSlider';
+    thresholdSlider.min = '80';
+    thresholdSlider.max = '250';
+    thresholdSlider.value = '190';
+    thresholdSlider.step = '1';
+    thresholdSlider.style.width = '300px';
+  
+    // Maak de span voor de waarde
+    var thresholdValueDisplay = document.createElement('span');
+    thresholdValueDisplay.id = 'thresholdValue';
+    thresholdValueDisplay.textContent = '190';
+  
+    // Voeg de elementen toe aan de controls container
+    controlsContainer.appendChild(label);
+    controlsContainer.appendChild(thresholdSlider);
+    controlsContainer.appendChild(thresholdValueDisplay);
+  
+    // Voeg de controls container toe net boven het canvas
+    var canvasElement = document.getElementById('noteVisualizer');
+    canvasElement.parentNode.insertBefore(controlsContainer, canvasElement);
+  
+    // Voeg event listener toe aan de slider
+    thresholdSlider.addEventListener('input', function() {
+      thresholdNote = this.value;
+      thresholdValueDisplay.textContent = this.value;
+    });
+  }
+  
 addKeyboardAndCanvasToBody();
+addSlider(); // run addSlider after addKeyboardAndCanvasToBody
+
+const thresholdSlider = document.getElementById('thresholdSlider');
+const thresholdValueDisplay = document.getElementById('thresholdValue');
+
+thresholdSlider.addEventListener('input', function() {
+  thresholdNote = this.value;
+  thresholdValueDisplay.textContent = this.value;
+});
+
 var canvas = document.getElementById("noteVisualizer");
 var canvasCtx = canvas.getContext("2d");
+
 
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var source = audioContext.createMediaElementSource(video);

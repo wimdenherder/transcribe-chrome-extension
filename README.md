@@ -13,7 +13,10 @@ https://youtu.be/xdd5pn1xs7M?t=315
 
 # next steps
 
+- 
+- normalize_threshold (soft and loud parts, adjust threshold)
 - better filter against noise, improves detecting melodies
+- add document.addEventListener('DOMContentLoaded', function() {
 - set up chrome extension
 - on/off button when you click the extension (default: on)
 - add threshold input to adjust threshold for detecting notes  
