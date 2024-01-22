@@ -212,10 +212,10 @@ function draw() {
   analyser.getByteFrequencyData(dataArray);
 
   // Verwijder eerst noten die langer dan durationShowNote seconden getoond zijn
-  let currentTime = Date.now();
+  let currentTime = video.currentTime;
   activeNotes = activeNotes.filter((note) => {
     // console.log({note: note.note, dur: currentTime - note.time});
-    return currentTime - note.time < durationShowNote * 1000;
+    return currentTime - note.time < durationShowNote;
   });
 
   // Clear het canvas eenmaal in plaats van in drawNoteOnKeyboard
