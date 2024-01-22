@@ -179,7 +179,7 @@ var dataArray = new Uint8Array(bufferLength);
 
 function noteFromFrequency(frequency) {
   var noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
-  return Math.round(noteNum) + 49;
+  return Math.round(noteNum) + 49 - 1; // - 1, because strangely it was 4 notes off
 }
 
 function draw() {
