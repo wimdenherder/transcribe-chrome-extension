@@ -11,21 +11,27 @@ let endTime = null;
 const video = document.querySelector("video");
 
 // Functie om de huidige tijd van de video te controleren
-function checkVideoTime() {
-  if (endTime !== null && video.currentTime >= endTime) {
+function checkLoop() {
+  const playerIsOutsideLoop = (endTime !== null && video.currentTime >= endTime)
+  || (startTime !== null && video.currentTime < startTime);
+
+  if (playerIsOutsideLoop) {
     video.currentTime = startTime;
     video.play();
   }
-  requestAnimationFrame(checkVideoTime);
+  requestAnimationFrame(checkLoop);
 }
 
 // Start het controleren van de tijd
-checkVideoTime();
+checkLoop();
 
 const startLoop = () => { startTime = video.currentTime; console.log(document.querySelector("#startButton")); addBorderToButton("#startButton") }
 const endLoop = () => { endTime = video.currentTime;video.currentTime = startTime; addBorderToButton("#endButton")  }
 const deleteLoop = () => { startTime = null; endTime = null; normalBorderButton("#startButton"); normalBorderButton("#endButton");}
-const videoSlower = () => video.playbackRate *= 1/1.15;
+const videoSlower = () => {
+  video.playbackRate *= 1/1.15;
+  updateSliderSpeed();
+}
 const videoFaster = () => {
   video.playbackRate *= 1.15;
   updateSliderSpeed();
@@ -375,9 +381,9 @@ function createMenu() {
 
 function updateSliderSpeed() {
   const slider = document.getElementById('speedSlider');
-  slider.value = this.playbackRate;
+  slider.value = video.playbackRate;
   const speedDisplay = document.getElementById('speedDisplay');
-  speedDisplay.innerText = (this.playbackRate * 100).toFixed(0) + '%'; // Update de snelheidstekst
+  speedDisplay.innerText = (video.playbackRate * 100).toFixed(0) + '%'; // Update de snelheidstekst
 }
 
 // Roep de functie aan om het menu te creëren
