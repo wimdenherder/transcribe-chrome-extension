@@ -224,26 +224,35 @@ function draw() {
       // drempelwaarde
       const frequency = (i * audioContext.sampleRate) / analyser.fftSize;
       const note = noteFromFrequency(frequency);
-
+      const volume = dataArray[i]; // volume van de noot
+  
       if (frequency >= maxFrequency) continue;
-
-      indexNote = activeNotes.findIndex((n) => n.note === note);
+  
+      let indexNote = activeNotes.findIndex((n) => n.note === note);
       if (indexNote === -1) {
-        activeNotes.push({ note, time: currentTime });
+        // Voeg nieuwe noot toe met volume
+        activeNotes.push({ note, time: currentTime, volume });
       } else {
+        // Update tijd en eventueel volume van bestaande noot
         activeNotes[indexNote].time = currentTime;
+        // Update alleen als het nieuwe volume hoger is dan het oude
+        if (volume > activeNotes[indexNote].volume) {
+          activeNotes[indexNote].volume = volume;
+        }
       }
     }
   }
 
   // Teken alle actieve noten
-  activeNotes.forEach((n) => drawNoteOnKeyboard(n.note, canvasCtx));
+  activeNotes.forEach(n => drawNoteOnKeyboard(n, canvasCtx));
 }
 
-function drawNoteOnKeyboard(note, canvasCtx) {
+function drawNoteOnKeyboard(noteInfo, canvasCtx) {
   // note 0 = a
   // Bepaal de positie van de noot op het keyboard
   // Dit hangt af van de afbeelding van je keyboard en hoe de noten erop zijn uitgelijnd
+
+  const {note, volume} = noteInfo;
 
   if (note < 36 || note > 111) return; // buiten bereik van keyboard
 
@@ -259,29 +268,38 @@ function drawNoteOnKeyboard(note, canvasCtx) {
   blackNotes = [1, 4, 6, 9, 11];
   noteNames = ["a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#"];
   noteColors = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "purple",
-    "pink",
-    "brown",
-    "black",
-    "lightgreen",
-    "grey",
-    "cyan",
+    "255, 0, 0",       // red
+    "255, 165, 0",     // orange
+    "255, 255, 0",     // yellow
+    "0, 128, 0",       // green
+    "0, 0, 255",       // blue
+    "128, 0, 128",     // purple
+    "255, 192, 203",   // pink
+    "165, 42, 42",     // brown
+    "0, 0, 0",         // black
+    "144, 238, 144",   // lightgreen
+    "128, 128, 128",   // grey
+    "0, 255, 255",     // cyan
   ];
+  
 
   if (blackNotes.includes(note % 12)) {
     // console.log("black note " + noteNames[note % 12]);
     yPosition -= 60;
   }
 
+  // Normaliseer de volume waarde tot een waarde tussen 0 en 1
+  const maxVolume = 255; // Stel dit in op de maximale waarde die je verwacht voor volume
+  const normalizedVolume = Math.min(Math.max(volume / maxVolume, 0), 1); // Zorg ervoor dat de waarde tussen 0 en 1 blijft
+
   // Teken de cirkel voor de noot
   canvasCtx.beginPath();
   canvasCtx.arc(xPosition, yPosition, 20, 0, 2 * Math.PI, false);
-  canvasCtx.fillStyle = noteColors[note % 12];
+  
+  // Pas de fillStyle aan om de doorzichtigheid (opacity) te gebruiken gebaseerd op volume
+  const color = noteColors[note % 12];
+  canvasCtx.fillStyle = `rgba(${color}, ${normalizedVolume})`;
+  
   canvasCtx.fill();
   canvasCtx.lineWidth = 2;
   canvasCtx.strokeStyle = "#550000";
