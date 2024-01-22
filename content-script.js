@@ -257,7 +257,7 @@ function drawNoteOnKeyboard(noteInfo, canvasCtx) {
 
   const {note, volume} = noteInfo;
 
-  if (note < 36 || note > 111) return; // buiten bereik van keyboard
+  if (note > 111) return; // buiten bereik van keyboard
 
   let xPosition =
     correctionKeyboadBase +
